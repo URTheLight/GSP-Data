@@ -27,8 +27,8 @@ export const router = createBrowserRouter([
     element: <AppLayout />,
     errorElement: <RootError />,
     children: [
-      { index: true, element: <Navigate to="/dashboard" replace /> },
-      { path: "dashboard", lazy: () => import("./dashboard/Dashboard.js") },
+      { index: true, element: <Navigate to="/home" replace /> },
+      { path: "home", lazy: () => import("./home/Dashboard.js") },
       {
         path: "settings",
         lazy: () => import("./settings/SettingsLayout.js"),
