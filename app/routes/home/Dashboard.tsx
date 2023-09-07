@@ -28,14 +28,14 @@ export function Component(): JSX.Element {
         <Button
           variant="outlined"
           size="large"
-          href={`../api/Api`}
+          href={`../view`}
           children="Explore Data"
           startIcon={<QueryStats />}
         />
         <Button
           variant="outlined"
           size="large"
-          href={`../download/Download`}
+          href={`../download`}
           children="Download Data"
           startIcon={<Download />}
         />
