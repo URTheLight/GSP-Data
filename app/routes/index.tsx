@@ -40,45 +40,13 @@ export const router = createBrowserRouter([
           },
         ],
       },
-    ],
-  },
-  {
-    path: "",
-    element: <AppLayout />,
-    errorElement: <RootError />,
-    children: [
-      { index: true, element: <Navigate to="/view" replace /> },
-      { path: "view", lazy: () => import("./view/View.js") },
       {
-        path: "settings",
-        lazy: () => import("./settings/SettingsLayout.js"),
-        children: [
-          { index: true, element: <Navigate to="/settings/account" /> },
-          {
-            path: "account",
-            lazy: () => import("./settings/AccountDetails.js"),
-          },
-        ],
+        path: "view",
+        lazy: () => import("./view/View.js"),
       },
-    ],
-  },
-  {
-    path: "",
-    element: <AppLayout />,
-    errorElement: <RootError />,
-    children: [
-      { index: true, element: <Navigate to="/download" replace /> },
-      { path: "download", lazy: () => import("./download/Download.js") },
       {
-        path: "settings",
-        lazy: () => import("./settings/SettingsLayout.js"),
-        children: [
-          { index: true, element: <Navigate to="/settings/account" /> },
-          {
-            path: "account",
-            lazy: () => import("./settings/AccountDetails.js"),
-          },
-        ],
+        path: "download",
+        lazy: () => import("./download/Download.js"),
       },
     ],
   },
