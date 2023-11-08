@@ -1,10 +1,8 @@
 /* Copyright: 2023 Arrighi Center for Global Studies */
-/* SPDX-FileCopyrightText: 2014-present Kriasoft */
-/* SPDX-License-Identifier: MIT */
 
 import React, { useState } from "react";
 import { usePageEffect } from "../../core/page.js";
-
+import LineChart from "./Render.js";
 import {
   Box,
   Button,
@@ -19,16 +17,6 @@ import {
   Typography,
   TextField,
 } from "@mui/material";
-
-interface FormData {
-  country: string;
-  region: string;
-  searchTerm: string;
-  filterBy: string;
-  source: string;
-  show: string;
-  years: number[];
-}
 
 const initialFormData: FormData = {
   country: "World",
@@ -46,26 +34,13 @@ export function Component(): JSX.Element {
   // set method for potentially disabling a field when the other is at use
   const [isCountrySelected, setIsCountrySelected] = useState(false);
   const [isFilterSelected, setIsFilterSelected] = useState(false);
-  const [keyProp, setKeyProp] = useState(0);
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement | { value: unknown }>,
     key: keyof typeof formData,
   ) => {
     const value = event.target.value as string | number;
-
-    if (key === "years") {
-      // Ensure years is an array of two numbers
-      setFormData((prevData) => ({
-        ...prevData,
-        years: Array.isArray(value) ? value : prevData.years,
-      }));
-    } else {
-      setFormData((prevData) => ({
-        ...prevData,
-        [key]: value,
-      }));
-    }
+    console.log(value);
 
     if (key === "country") {
       // If a country is selected, clear the region field
@@ -87,8 +62,7 @@ export function Component(): JSX.Element {
       setIsFilterSelected(true);
     }
 
-    // Increment the keyProp to trigger remounting of LineChart
-    setKeyProp((prevKey) => prevKey + 1);
+    setFormData((prevData) => ({ ...prevData, [key]: value }));
   };
 
   const handleYearsChange = (event: Event, newValue: number | number[]) => {
@@ -203,14 +177,12 @@ export function Component(): JSX.Element {
           aria-label="outlined button group"
           onChange={(e) => handleInputChange(e, "show")}
         >
-          <Button value="chart">Time Series</Button>
-          <Button value="map">Heat Map</Button>
-          <Button value="events">Detailed Events</Button>
+          <Button onClick={handleSubmit}>Time Series</Button>
+          <Button onClick={handleSubmit}>Heat Map</Button>
+          <Button onClick={handleSubmit}>Detailed Events</Button>
         </ButtonGroup>
 
-        {/*{formData.country && formData.years.length === 2 && (
-          <LineChart FormData={formData} />
-        )}*/}
+        {/* <LineChart countryData={selectedCountryData} /> */}
 
         <Box
           flexGrow={1}
@@ -227,7 +199,9 @@ export function Component(): JSX.Element {
             max={2014}
             sx={{ width: 300 }}
           />
-          <Typography gutterBottom>Years</Typography>
+          <Typography variant="h6" gutterBottom>
+            Years
+          </Typography>
         </Box>
       </Paper>
     </Container>
