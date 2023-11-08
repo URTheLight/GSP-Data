@@ -1,57 +1,64 @@
-// LineChart.tsx
 import React, { useEffect, useRef } from "react";
-import { Chart, LineController, LineElement, CategoryScale } from "chart.js";
+import { Chart } from "chart.js";
 
-Chart.register(LineController, LineElement, CategoryScale);
-
-export const LineChart = ({ keyProp, data }) => {
+const LineChart = ({ countryData }) => {
   const chartRef = useRef(null);
-  const chartInstance = useRef(null);
 
   useEffect(() => {
-    if (chartInstance.current) {
-      // Destroy the previous chart instance if it exists
-      chartInstance.current.destroy();
-    }
-
-    if (chartRef.current && data) {
+    if (chartRef.current) {
       const ctx = chartRef.current.getContext("2d");
-
-      // Replace this with your actual data fetching and processing logic
-      const chartData = {
-        labels: data.years
-          ? Array.from(
-              { length: data.years[1] - data.years[0] + 1 },
-              (_, i) => data.years[0] + i,
-            )
-          : [],
-        datasets: [
-          {
-            label: `Line Chart for ${data.country}`,
-            data: data.years
-              ? Array.from(
-                  { length: data.years[1] - data.years[0] + 1 },
-                  () => Math.random() * 100,
-                )
-              : [],
-            borderColor: "rgb(75, 192, 192)",
-            borderWidth: 2,
-          },
-        ],
-      };
-
-      chartInstance.current = new Chart(ctx, {
+      new Chart(ctx, {
         type: "line",
-        data: chartData,
+        data: {
+          labels: countryData.Year, // X-axis labels (years)
+          datasets: [
+            {
+              label: "NYT Z-Score",
+              data: countryData["NYT Z-Score"], // Y-axis data for NYT Z-Score
+              borderColor: "blue",
+              fill: false,
+            },
+            {
+              label: "Guardian Z-Score",
+              data: countryData["Guardian Z-Score"], // Y-axis data for Guardian Z-Score
+              borderColor: "red",
+              fill: false,
+            },
+            {
+              label: "All Z-Score",
+              data: countryData["All Z-Score"], // Y-axis data for All Z-Score
+              borderColor: "green",
+              fill: false,
+            },
+          ],
+        },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Year",
+              },
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Z-Score",
+              },
+            },
+          },
         },
       });
     }
-  }, [keyProp, data]);
+  }, [countryData]);
 
-  return <canvas ref={chartRef}></canvas>;
+  return (
+    <div className="chart-container">
+      <canvas ref={chartRef} />
+    </div>
+  );
 };
 
 export default LineChart;
