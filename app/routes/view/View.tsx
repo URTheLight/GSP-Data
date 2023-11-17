@@ -1,13 +1,11 @@
 /* Copyright: 2023 Arrighi Center for Global Studies */
 
-import
-{
+import {
   TablePagination,
   tablePaginationClasses as classes,
 } from "@mui/base/TablePagination";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import
-{
+import {
   Autocomplete,
   Box,
   Button,
@@ -59,7 +57,7 @@ type FormData = {
 const initialFormData: FormData = {
   country: [],
   region: "World",
-  years: [ 1792, 2016 ],
+  years: [1792, 2016],
   searchTerm: "",
   filterBy: "",
   source: "nyt&guardian",
@@ -280,8 +278,8 @@ const labelTooltipText = `0 = false positive (no social protest)
 5 = domestic hard call/uncoded 5 second rule
 9 = horizontal social protest/individual protest`;
 
-const CustomTablePagination = styled( TablePagination )`
-  & .${ classes.toolbar } {
+const CustomTablePagination = styled(TablePagination)`
+  & .${classes.toolbar} {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -293,11 +291,11 @@ const CustomTablePagination = styled( TablePagination )`
     }
   }
 
-  & .${ classes.selectLabel } {
+  & .${classes.selectLabel} {
     margin: 0;
   }
 
-  & .${ classes.displayedRows } {
+  & .${classes.displayedRows} {
     margin: 0;
 
     @media (min-width: 768px) {
@@ -305,141 +303,122 @@ const CustomTablePagination = styled( TablePagination )`
     }
   }
 
-  & .${ classes.spacer } {
+  & .${classes.spacer} {
     display: none;
   }
 
-  & .${ classes.actions } {
+  & .${classes.actions} {
     display: flex;
     gap: 0.25rem;
   }
 `;
 
-export function Component (): JSX.Element
-{
-  usePageEffect( { title: "Global Social Protest" } );
-  const [ formData, setFormData ] = useState<FormData>( initialFormData );
+export function Component(): JSX.Element {
+  usePageEffect({ title: "Global Social Protest" });
+  const [formData, setFormData] = useState<FormData>(initialFormData);
   // set method for potentially disabling a field when the other is at use
-  const [ isCountrySelected, setIsCountrySelected ] = useState( false );
-  const [ isFilterSelected, setIsFilterSelected ] = useState( false );
-  const [ collectionData, setCollectionData ] = useState<CollectionItem[]>( [] );
-  const [ page, setPage ] = useState( 0 );
-  const [ rowsPerPage, setRowsPerPage ] = useState( 5 );
-  const tableContainerRef = useRef( null );
-  const [ isLoading, setIsLoading ] = useState( true );
-  const [ chartInstance, setChartInstance ] = useState<Chart | null>( null );
+  const [isCountrySelected, setIsCountrySelected] = useState(false);
+  const [isFilterSelected, setIsFilterSelected] = useState(false);
+  const [collectionData, setCollectionData] = useState<CollectionItem[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const tableContainerRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [chartInstance, setChartInstance] = useState<Chart | null>(null);
   const currentUser = useCurrentUser();
 
-  const filteredData = collectionData.filter( ( item ) =>
-  {
+  const filteredData = collectionData.filter((item) => {
     // Check for country filter
     let matchesCountry = true;
-    if ( formData.country && formData.country.length > 0 )
-    {
+    if (formData.country && formData.country.length > 0) {
       matchesCountry = formData.country.some(
-        ( country ) =>
+        (country) =>
           item.locationCountryNew &&
-          item.locationCountryNew.includes( country.toUpperCase() ),
+          item.locationCountryNew.includes(country.toUpperCase()),
       );
     }
 
     // Initialize matchesSearchTerm to true
     let matchesSearchTerm = true;
 
-    if ( formData.searchTerm )
-    {
+    if (formData.searchTerm) {
       const searchTermLower = formData.searchTerm.toLowerCase();
-      if ( item.source === "NYT" )
-      {
+      if (item.source === "NYT") {
         // For NYT, check both title and abstract
         matchesSearchTerm =
-          ( item.Title && item.Title.toLowerCase().includes( searchTermLower ) ) ||
-          ( item.Abstract &&
-            item.Abstract.toLowerCase().includes( searchTermLower ) );
-      } else if ( item.source === "Guardian" )
-      {
+          (item.Title && item.Title.toLowerCase().includes(searchTermLower)) ||
+          (item.Abstract &&
+            item.Abstract.toLowerCase().includes(searchTermLower));
+      } else if (item.source === "Guardian") {
         // For Guardian, check only title
         matchesSearchTerm =
-          item.Title && item.Title.toLowerCase().includes( searchTermLower );
+          item.Title && item.Title.toLowerCase().includes(searchTermLower);
       }
     }
 
     // Check for year range filter
     const yearInRange =
-      item.year_old >= formData.years[ 0 ] && item.year_old <= formData.years[ 1 ];
+      item.year_old >= formData.years[0] && item.year_old <= formData.years[1];
 
     // Check for source filter
     let matchesSource = true;
-    if ( formData.source === "nyt" )
-    {
+    if (formData.source === "nyt") {
       matchesSource = item.source === "NYT";
-    } else if ( formData.source === "guardian" )
-    {
+    } else if (formData.source === "guardian") {
       matchesSource = item.source === "Guardian";
     }
     // If formData.source is 'both' or not set, matchesSource remains true
 
     // Return true if item passes all filters
     return matchesCountry && matchesSearchTerm && yearInRange && matchesSource;
-  } );
+  });
 
   const handleInputChange = (
     event: React.ChangeEvent<
       HTMLInputElement | { name?: string; value: unknown }
     >,
     key: keyof typeof formData,
-  ) =>
-  {
+  ) => {
     let value = event.target.value;
 
     // Check if the input change is for the years (slider)
-    if ( key === "years" && Array.isArray( value ) )
-    {
+    if (key === "years" && Array.isArray(value)) {
       value = value as number[]; // Cast value to an array of numbers
-    } else
-    {
+    } else {
       value = value as string | number; // Cast value to string or number for other inputs
     }
 
-    setFormData( ( prevData ) =>
-    {
+    setFormData((prevData) => {
       let updates = {};
 
-      if ( key === "country" )
-      {
+      if (key === "country") {
         updates = { ...prevData, region: "", country: value };
-        setIsCountrySelected( true );
-      } else if ( key === "region" )
-      {
+        setIsCountrySelected(true);
+      } else if (key === "region") {
         updates = { ...prevData, country: "", region: value };
-        setIsCountrySelected( false );
-      } else if ( key === "searchTerm" )
-      {
+        setIsCountrySelected(false);
+      } else if (key === "searchTerm") {
         updates = { ...prevData, filterBy: "", searchTerm: value };
-        setIsFilterSelected( true );
-      } else if ( key === "filterBy" )
-      {
+        setIsFilterSelected(true);
+      } else if (key === "filterBy") {
         updates = { ...prevData, searchTerm: "", filterBy: value };
-        setIsFilterSelected( true );
-      } else
-      {
-        updates = { ...prevData, [ key ]: value };
+        setIsFilterSelected(true);
+      } else {
+        updates = { ...prevData, [key]: value };
       }
 
       // Reset to first page on change
-      setPage( 0 );
+      setPage(0);
 
       // Return the updated object
       return { ...updates };
-    } );
+    });
   };
 
   // Handler for changing the page
-  const handleChangePage = ( event: unknown, newPage: number ) =>
-  {
-    setPage( newPage );
-    if ( tableContainerRef.current )
-    {
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+    if (tableContainerRef.current) {
       tableContainerRef.current.scrollTop = 0;
     }
   };
@@ -447,50 +426,42 @@ export function Component (): JSX.Element
   // Handler for changing the number of rows per page
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>,
-  ) =>
-  {
-    setRowsPerPage( parseInt( event.target.value, 10 ) );
-    setPage( 0 );
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
-  useEffect( () =>
-  {
-    const fetchData = async () =>
-    {
-      setIsLoading( true );
-      try
-      {
-        const response = await fetch( "http://0.0.0.0:3001/data" );
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch("http://localhost:3001/data");
         const data = await response.json();
-        setCollectionData( data );
-      } catch ( error )
-      {
-        console.error( "Error fetching data:", error );
-      } finally
-      {
-        setIsLoading( false );
+        setCollectionData(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchData();
-  }, [] );
+  }, []);
 
-  const renderTable = () =>
-  {
-    if ( isLoading )
-    {
+  const renderTable = () => {
+    if (isLoading) {
       return (
         <Box
-          sx={ {
+          sx={{
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
             height: "100%",
-          } }
+          }}
         >
           <CircularProgress />
-          <Typography style={ { marginTop: 20 } }>
+          <Typography style={{ marginTop: 20 }}>
             It may take a while...
           </Typography>
         </Box>
@@ -508,10 +479,10 @@ export function Component (): JSX.Element
 
     return (
       <>
-        <Box sx={ { width: "100%" } }>
-          {/* Sticky Table Header */ }
+        <Box sx={{ width: "100%" }}>
+          {/* Sticky Table Header */}
           <Box
-            sx={ {
+            sx={{
               position: "sticky",
               top: 0,
               display: "flex",
@@ -520,68 +491,68 @@ export function Component (): JSX.Element
               background: "white",
               padding: "16px",
               zIndex: 1,
-            } }
+            }}
           >
-            <Box sx={ { width: "68%", textAlign: "left", fontWeight: "bold" } }>
+            <Box sx={{ width: "68%", textAlign: "left", fontWeight: "bold" }}>
               Title
             </Box>
-            <Box sx={ { width: "17%", textAlign: "right", fontWeight: "bold" } }>
+            <Box sx={{ width: "17%", textAlign: "right", fontWeight: "bold" }}>
               Year Published
             </Box>
-            <Box sx={ { width: "15%", textAlign: "right", fontWeight: "bold" } }>
+            <Box sx={{ width: "15%", textAlign: "right", fontWeight: "bold" }}>
               Label
               <Tooltip
-                title={ <pre>{ labelTooltipText }</pre> }
+                title={<pre>{labelTooltipText}</pre>}
                 placement="top"
-                sx={ { typography: "body1" } }
+                sx={{ typography: "body1" }}
               >
                 <IconButton>
-                  <HelpOutlineIcon style={ { fontSize: 13 } } />
+                  <HelpOutlineIcon style={{ fontSize: 13 }} />
                 </IconButton>
               </Tooltip>
             </Box>
           </Box>
 
-          {/* Scrollable TableBody within TableContainer */ }
+          {/* Scrollable TableBody within TableContainer */}
           <TableContainer
-            ref={ tableContainerRef }
-            component={ Paper }
-            sx={ { overflow: "auto", height: fixedTableHeight } }
+            ref={tableContainerRef}
+            component={Paper}
+            sx={{ overflow: "auto", height: fixedTableHeight }}
           >
-            <Table aria-label="main table" sx={ { tableLayout: "fixed" } }>
+            <Table aria-label="main table" sx={{ tableLayout: "fixed" }}>
               <TableBody>
-                { currentRows.map( ( item ) => (
-                  <TableRow key={ item._id }>
-                    <TableCell component="th" scope="row" sx={ { width: "68%" } }>
+                {currentRows.map((item) => (
+                  <TableRow key={item._id}>
+                    <TableCell component="th" scope="row" sx={{ width: "68%" }}>
                       <a
-                        href={ item.DocumentURL }
+                        href={item.DocumentURL}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        { item.Title }
+                        {item.Title}
                       </a>
                     </TableCell>
-                    <TableCell align="center" sx={ { width: "17%" } }>
-                      { item.year_old }
+                    <TableCell align="center" sx={{ width: "17%" }}>
+                      {item.year_old}
                     </TableCell>
-                    <TableCell align="center" sx={ { width: "15%" } }>
-                      { item.socialProtestTF }
+                    <TableCell align="center" sx={{ width: "15%" }}>
+                      {item.socialProtestTF}
                     </TableCell>
                   </TableRow>
-                ) ) }
+                ))}
               </TableBody>
             </Table>
           </TableContainer>
         </Box>
         <CustomTablePagination
-          rowsPerPageOptions={ [ 5, 10, 25 ] }
-          colSpan={ 3 }
-          count={ filteredData.length }
-          rowsPerPage={ rowsPerPage }
-          page={ page }
-          onPageChange={ handleChangePage }
-          onRowsPerPageChange={ handleChangeRowsPerPage }
-          slotProps={ {
+          rowsPerPageOptions={[5, 10, 25]}
+          colSpan={3}
+          count={filteredData.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          slotProps={{
             select: {
               "aria-label": "rows per page",
             },
@@ -589,28 +560,26 @@ export function Component (): JSX.Element
               showFirstButton: true,
               showLastButton: true,
             },
-          } }
+          }}
         />
       </>
     );
   };
 
-  const renderLineChart = () =>
-  {
-    if ( isLoading )
-    {
+  const renderLineChart = () => {
+    if (isLoading) {
       return (
         <Box
-          sx={ {
+          sx={{
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
             height: "100%",
-          } }
+          }}
         >
           <CircularProgress />
-          <Typography style={ { marginTop: 20 } }>Loading...</Typography>
+          <Typography style={{ marginTop: 20 }}>Loading...</Typography>
         </Box>
       );
     }
@@ -628,92 +597,80 @@ export function Component (): JSX.Element
     const totalColor = "rgb(162, 162, 162)"; // Distinct color for the total dataset
 
     // Find the range of years in filteredData
-    const years = filteredData.map( ( item ) => item.year_old );
-    const minYear = Math.min( ...years );
-    const maxYear = Math.max( ...years );
+    const years = filteredData.map((item) => item.year_old);
+    const minYear = Math.min(...years);
+    const maxYear = Math.max(...years);
 
     // Initialize an object with all years and count 0
     const initialCountByYear = {};
-    for ( let year = minYear; year <= maxYear; year++ )
-    {
-      initialCountByYear[ year ] = 0;
+    for (let year = minYear; year <= maxYear; year++) {
+      initialCountByYear[year] = 0;
     }
 
     const countByYear = { ...initialCountByYear };
 
     // Aggregate data by year
-    filteredData.forEach( ( item ) =>
-    {
-      countByYear[ item.year_old ]++;
-    } );
+    filteredData.forEach((item) => {
+      countByYear[item.year_old]++;
+    });
 
     // Handle no country selected case - aggregate for all data
     let datasets = [];
-    if ( formData.country.length === 0 )
-    {
-      datasets.push( {
+    if (formData.country.length === 0) {
+      datasets.push({
         label: "Total Articles for the World by Year",
-        data: Object.values( countByYear ),
+        data: Object.values(countByYear),
         fill: false,
         // Assign color for the total
-      } );
-    } else
-    {
+      });
+    } else {
       // Handle selected countries case
       const initialCountByYearAndCountry = {};
-      formData.country.forEach( ( country ) =>
-      {
-        initialCountByYearAndCountry[ country ] = { ...initialCountByYear };
-      } );
+      formData.country.forEach((country) => {
+        initialCountByYearAndCountry[country] = { ...initialCountByYear };
+      });
 
-      filteredData.forEach( ( item ) =>
-      {
-        formData.country.forEach( ( country ) =>
-        {
-          if ( item.locationCountryNew.includes( country.toUpperCase() ) )
-          {
-            initialCountByYearAndCountry[ country ][ item.year_old ]++;
+      filteredData.forEach((item) => {
+        formData.country.forEach((country) => {
+          if (item.locationCountryNew.includes(country.toUpperCase())) {
+            initialCountByYearAndCountry[country][item.year_old]++;
           }
-        } );
-      } );
+        });
+      });
 
-      datasets = formData.country.map( ( country, index ) => ( {
-        label: `Articles for ${ country }`,
-        data: Object.values( initialCountByYearAndCountry[ country ] ),
+      datasets = formData.country.map((country, index) => ({
+        label: `Articles for ${country}`,
+        data: Object.values(initialCountByYearAndCountry[country]),
         fill: false,
-        borderColor: colorPalette[ index % colorPalette.length ], // Assign color from palette
-        backgroundColor: colorPalette[ index % colorPalette.length ],
-      } ) );
+        borderColor: colorPalette[index % colorPalette.length], // Assign color from palette
+        backgroundColor: colorPalette[index % colorPalette.length],
+      }));
 
       // Add total data only if more than one country is selected
-      if ( formData.country.length > 1 )
-      {
-        const totalData = Array( maxYear - minYear + 1 ).fill( 0 ); // Initialize totalData array
+      if (formData.country.length > 1) {
+        const totalData = Array(maxYear - minYear + 1).fill(0); // Initialize totalData array
 
-        for ( let year = minYear; year <= maxYear; year++ )
-        {
-          formData.country.forEach( ( country ) =>
-          {
-            if ( initialCountByYearAndCountry[ country ][ year ] )
-            {
-              totalData[ year - minYear ] +=
-                initialCountByYearAndCountry[ country ][ year ];
+        for (let year = minYear; year <= maxYear; year++) {
+          formData.country.forEach((country) => {
+            if (initialCountByYearAndCountry[country][year]) {
+              totalData[year - minYear] +=
+                initialCountByYearAndCountry[country][year];
             }
-          } );
+          });
         }
 
-        datasets.push( {
+        datasets.push({
           label: "Total Articles",
           data: totalData,
           fill: false,
           borderColor: totalColor, // Assign distinct color for the total dataset
           backgroundColor: totalColor,
-        } );
+        });
       }
     }
 
     const chartData = {
-      labels: Object.keys( initialCountByYear ).sort(),
+      labels: Object.keys(initialCountByYear).sort(),
       datasets: datasets,
     };
 
@@ -726,84 +683,72 @@ export function Component (): JSX.Element
     };
 
     return (
-      <div style={ { height: "362px", width: "100%" } }>
-        <Line ref={ chartRefCallback } data={ chartData } options={ options } />
+      <div style={{ height: "362px", width: "100%" }}>
+        <Line ref={chartRefCallback} data={chartData} options={options} />
       </div>
     );
   };
 
-  const renderHeatMap = () =>
-  {
+  const renderHeatMap = () => {
     return (
       <Box
-        sx={ {
+        sx={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
           height: "100%",
-        } }
+        }}
       >
-        <Typography style={ { marginTop: 20 } }>Under Construction...</Typography>
+        <Typography style={{ marginTop: 20 }}>Under Construction...</Typography>
       </Box>
     );
   };
 
-  const chartRefCallback = ( chart: Chart ) =>
-  {
-    if ( chart )
-    {
-      setChartInstance( chart );
+  const chartRefCallback = (chart: Chart) => {
+    if (chart) {
+      setChartInstance(chart);
     }
   };
 
-  const convertTimeSeriesToCSV = ( filteredData, formData ) =>
-  {
-    const startYear = formData.years[ 0 ];
+  const convertTimeSeriesToCSV = (filteredData, formData) => {
+    const startYear = formData.years[0];
     const endYear =
-      formData.years[ 1 ] ||
-      Math.max( ...filteredData.map( ( item ) => item.year_old ) );
+      formData.years[1] ||
+      Math.max(...filteredData.map((item) => item.year_old));
 
     // Initialize counts for each year for each country
     const initialCountByYearAndCountry = {};
-    formData.country.forEach( ( country ) =>
-    {
-      initialCountByYearAndCountry[ country ] = {};
-      for ( let year = startYear; year <= endYear; year++ )
-      {
-        initialCountByYearAndCountry[ country ][ year ] = 0;
+    formData.country.forEach((country) => {
+      initialCountByYearAndCountry[country] = {};
+      for (let year = startYear; year <= endYear; year++) {
+        initialCountByYearAndCountry[country][year] = 0;
       }
-    } );
+    });
 
     // Aggregate data by year for each country
-    filteredData.forEach( ( item ) =>
-    {
-      formData.country.forEach( ( country ) =>
-      {
-        if ( item.locationCountryNew.includes( country.toUpperCase() ) )
-        {
-          initialCountByYearAndCountry[ country ][ item.year_old ]++;
+    filteredData.forEach((item) => {
+      formData.country.forEach((country) => {
+        if (item.locationCountryNew.includes(country.toUpperCase())) {
+          initialCountByYearAndCountry[country][item.year_old]++;
         }
-      } );
-    } );
+      });
+    });
 
     // Prepare CSV content
     let csvContent =
       "Year," +
-      formData.country.join( "," ) +
-      ( formData.country.length > 1 ? ",Total\n" : "\n" );
-    for ( let year = startYear; year <= endYear; year++ )
-    {
-      let row = `${ year }`;
+      formData.country.join(",") +
+      (formData.country.length > 1 ? ",Total\n" : "\n");
+    for (let year = startYear; year <= endYear; year++) {
+      let row = `${year}`;
       let total = 0;
-      formData.country.forEach( ( country ) =>
-      {
-        row += `,${ initialCountByYearAndCountry[ country ][ year ] }`;
-        total += initialCountByYearAndCountry[ country ][ year ];
-      } );
-      if ( formData.country.length > 1 )
-      {
-        row += `,${ total }`;
+      formData.country.forEach((country) => {
+        row += `,${initialCountByYearAndCountry[country][year]}`;
+        total += initialCountByYearAndCountry[country][year];
+      });
+      if (formData.country.length > 1) {
+        row += `,${total}`;
       }
       csvContent += row + "\n";
     }
@@ -811,38 +756,34 @@ export function Component (): JSX.Element
     return csvContent;
   };
 
-  const convertToCSV = ( arr: CollectionItem[] ): string =>
-  {
-    const array = [ Object.keys( arr[ 0 ] ) ].concat( arr as any );
+  const convertToCSV = (arr: CollectionItem[]): string => {
+    const array = [Object.keys(arr[0])].concat(arr as any);
     return array
-      .map( ( it: any ) =>
-      {
-        return Object.values( it ).toString();
-      } )
-      .join( "\n" );
+      .map((it: any) => {
+        return Object.values(it).toString();
+      })
+      .join("\n");
   };
 
-  const downloadCSV = ( csvString: string, formData: FormData ): void =>
-  {
+  const downloadCSV = (csvString: string, formData: FormData): void => {
     // Filter out the non-empty values and join them to form a filename
-    const nonEmptyValues = Object.values( formData ).filter(
-      ( value ) => value && value.toString().trim() !== "",
+    const nonEmptyValues = Object.values(formData).filter(
+      (value) => value && value.toString().trim() !== "",
     );
-    const filename = nonEmptyValues.join( "_" ) + ".csv";
+    const filename = nonEmptyValues.join("_") + ".csv";
 
-    const blob = new Blob( [ csvString ], { type: "text/csv;charset=utf-8;" } );
-    const link = document.createElement( "a" );
-    const url = URL.createObjectURL( blob );
-    link.setAttribute( "href", url );
-    link.setAttribute( "download", filename );
+    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
     link.style.visibility = "hidden";
-    document.body.appendChild( link );
+    document.body.appendChild(link);
     link.click();
-    document.body.removeChild( link );
+    document.body.removeChild(link);
   };
 
-  if ( currentUser === undefined )
-  {
+  if (currentUser === undefined) {
     // Loading state
     return (
       <Box
@@ -854,8 +795,7 @@ export function Component (): JSX.Element
         <CircularProgress />
       </Box>
     );
-  } else if ( currentUser === null )
-  {
+  } else if (currentUser === null) {
     // Not logged in state
     return (
       <Box
@@ -875,15 +815,15 @@ export function Component (): JSX.Element
   return (
     <Container
       maxWidth="lg"
-      sx={ {
+      sx={{
         display: "flex",
         justifyContent: "space-between",
         py: "10vh",
-      } }
+      }}
     >
-      {/* Left Box (Control Panel) */ }
+      {/* Left Box (Control Panel) */}
       <Paper
-        sx={ {
+        sx={{
           padding: "16px",
           width: "28%",
           height: "480px",
@@ -891,42 +831,41 @@ export function Component (): JSX.Element
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-        } }
+        }}
       >
         <Typography>Choose a Location</Typography>
         <FormControl fullWidth>
           <Autocomplete
             multiple
-            onChange={ ( event, newValue ) =>
-            {
+            onChange={(event, newValue) => {
               // newValue will be an array of selected items
-              handleInputChange( { target: { value: newValue } }, "country" );
-            } }
-            value={ formData.country }
-            options={ countries }
-            renderInput={ ( params ) => (
-              <TextField { ...params } label="Country" variant="filled" />
-            ) }
-            renderTags={ ( value, getTagProps ) =>
-              value.map( ( option, index ) => (
+              handleInputChange({ target: { value: newValue } }, "country");
+            }}
+            value={formData.country}
+            options={countries}
+            renderInput={(params) => (
+              <TextField {...params} label="Country" variant="filled" />
+            )}
+            renderTags={(value, getTagProps) =>
+              value.map((option, index) => (
                 <Chip
                   variant="outlined"
-                  label={ option }
+                  label={option}
                   size="small"
-                  { ...getTagProps( { index } ) }
-                  style={ { margin: 2 } } // Adjust chip styling as needed
+                  {...getTagProps({ index })}
+                  style={{ margin: 2 }} // Adjust chip styling as needed
                 />
-              ) )
+              ))
             }
-            style={ { marginTop: "8px", height: "65px", overflowY: "auto" } }
+            style={{ marginTop: "8px", height: "65px", overflowY: "auto" }}
           />
         </FormControl>
-        <FormControl fullWidth style={ { marginBottom: "10px" } } disabled>
+        <FormControl fullWidth style={{ marginBottom: "10px" }} disabled>
           <InputLabel>Region</InputLabel>
           <Select
-            value={ formData.region }
+            value={formData.region}
             label="Region"
-            onChange={ ( event, newValue ) => handleInputChange( event, "region" ) }
+            onChange={(event, newValue) => handleInputChange(event, "region")}
             variant="filled"
           >
             <MenuItem value="World">World</MenuItem>
@@ -938,51 +877,51 @@ export function Component (): JSX.Element
           </Select>
         </FormControl>
 
-        <Typography style={ { marginBottom: "8px" } }>Add a Filter</Typography>
+        <Typography style={{ marginBottom: "8px" }}>Add a Filter</Typography>
         <TextField
           label="Search Term"
           fullWidth
-          onChange={ ( event, newValue ) => handleInputChange( event, "searchTerm" ) }
-          value={ formData.searchTerm }
-          style={ { marginBottom: "8px" } }
+          onChange={(event, newValue) => handleInputChange(event, "searchTerm")}
+          value={formData.searchTerm}
+          style={{ marginBottom: "8px" }}
           variant="filled"
         />
         <FormControl
           fullWidth
-          style={ { marginBottom: "10px" } }
+          style={{ marginBottom: "10px" }}
           disabled
           variant="standard"
         >
           <TextField
             label="Filter By"
             fullWidth
-            onChange={ ( event, newValue ) => handleInputChange( event, "filterBy" ) }
-            value={ formData.filterBy }
-            style={ { marginBottom: "8px" } }
+            onChange={(event, newValue) => handleInputChange(event, "filterBy")}
+            value={formData.filterBy}
+            style={{ marginBottom: "8px" }}
             variant="filled"
             disabled
           />
         </FormControl>
-        <FormControl fullWidth style={ { marginBottom: "8px" } }>
+        <FormControl fullWidth style={{ marginBottom: "8px" }}>
           <InputLabel>Source</InputLabel>
           <Select
-            value={ formData.source }
+            value={formData.source}
             label="Region"
-            onChange={ ( event, newValue ) => handleInputChange( event, "source" ) }
+            onChange={(event, newValue) => handleInputChange(event, "source")}
           >
             <MenuItem value="nyt&guardian">NYT & Guardian</MenuItem>
             <MenuItem value="nyt">New York Times</MenuItem>
             <MenuItem value="guardian">The Guardian</MenuItem>
           </Select>
         </FormControl>
-        { formData.show === "time" ? (
+        {formData.show === "time" ? (
           <Button
             variant="contained"
             color="primary"
-            style={ { marginTop: "12px" } }
-            onClick={ () =>
+            style={{ marginTop: "12px" }}
+            onClick={() =>
               downloadCSV(
-                convertTimeSeriesToCSV( filteredData, formData ),
+                convertTimeSeriesToCSV(filteredData, formData),
                 formData,
               )
             }
@@ -993,8 +932,8 @@ export function Component (): JSX.Element
           <Button
             variant="contained"
             color="primary"
-            style={ { marginTop: "12px" } }
-            onClick={ () => downloadCSV( convertToCSV( filteredData ), formData ) }
+            style={{ marginTop: "12px" }}
+            onClick={() => downloadCSV(convertToCSV(filteredData), formData)}
           >
             Download Data
           </Button>
@@ -1002,14 +941,14 @@ export function Component (): JSX.Element
           <Button
             variant="contained"
             color="primary"
-            style={ { marginTop: "12px" } }
+            style={{ marginTop: "12px" }}
           >
             Download Map
           </Button>
-        ) : null }
+        ) : null}
       </Paper>
       <Paper
-        sx={ {
+        sx={{
           padding: "16px",
           width: "70%",
           height: "480px",
@@ -1017,65 +956,65 @@ export function Component (): JSX.Element
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between", // This will align children to the start and end of the container
-        } }
+        }}
       >
         <Box
-          sx={ {
+          sx={{
             display: "flex",
             justifyContent: "center", // This will center the ButtonGroup horizontally
             width: "100%", // Ensures the Box takes full width of the Paper
-          } }
+          }}
         >
           <ButtonGroup
-            value={ formData.show }
+            value={formData.show}
             exclusive
-            onChange={ ( event, newValue ) => handleInputChange( event, "show" ) }
+            onChange={(event, newValue) => handleInputChange(event, "show")}
             color="primary"
             aria-label="data display options"
           >
             <Button
               value="time"
-              onClick={ () => setFormData( { ...formData, show: "time" } ) }
+              onClick={() => setFormData({ ...formData, show: "time" })}
             >
               Time Series
             </Button>
             <Button
               value="detail"
-              onClick={ () => setFormData( { ...formData, show: "detail" } ) }
+              onClick={() => setFormData({ ...formData, show: "detail" })}
             >
               Detailed Events
             </Button>
             <Button
               value="map"
-              onClick={ () => setFormData( { ...formData, show: "map" } ) }
+              onClick={() => setFormData({ ...formData, show: "map" })}
             >
               Heat Map
             </Button>
           </ButtonGroup>
         </Box>
 
-        {/* Display the content here */ }
-        { formData.show === "time"
+        {/* Display the content here */}
+        {formData.show === "time"
           ? renderLineChart()
           : formData.show === "detail"
             ? renderTable()
             : formData.show === "map"
               ? renderHeatMap()
-              : null }
+              : null}
         <Box
-          flexGrow={ 1 }
+          flexGrow={1}
           display="flex"
           flexDirection="column"
           alignItems="center"
           justifyContent="flex-end"
         >
           <Slider
-            value={ formData.years }
-            onChange={ ( event, newValue ) => handleInputChange( event, "years" ) }
+            value={formData.years}
+            onChange={(event, newValue) => handleInputChange(event, "years")}
             valueLabelDisplay="auto"
-            min={ 1792 }
-            max={ 2016 }
-            sx={ { width: 300 } }
+            min={1792}
+            max={2016}
+            sx={{ width: 300 }}
           />
           <Typography variant="h6" gutterBottom>
             Years
