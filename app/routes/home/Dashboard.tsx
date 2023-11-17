@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: 2014-present Kriasoft */
 /* SPDX-License-Identifier: MIT */
 
-import { QueryStats, Download } from "@mui/icons-material";
+import { Plagiarism, QueryStats } from "@mui/icons-material";
 import { Box, Button, Container, Typography } from "@mui/material";
 import { usePageEffect } from "../../core/page.js";
 
@@ -41,9 +41,9 @@ export function Component(): JSX.Element {
         <Button
           variant="outlined"
           size="large"
-          href={`../download`}
-          children="Download Data"
-          startIcon={<Download />}
+          href={`../analysis`}
+          children="Text Analysis"
+          startIcon={<Plagiarism />}
         />
       </Box>
     </Container>

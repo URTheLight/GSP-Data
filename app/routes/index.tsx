@@ -45,8 +45,8 @@ export const router = createBrowserRouter([
         lazy: () => import("./view/View.js"),
       },
       {
-        path: "download",
-        lazy: () => import("./download/Download.js"),
+        path: "analysis",
+        lazy: () => import("./analysis/Analysis.js"),
       },
     ],
   },
