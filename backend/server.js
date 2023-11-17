@@ -7,13 +7,18 @@ const MongoClient = mongodb.MongoClient;
 const app = express();
 const port = 3001; // Ensure this port is different from the React app's port
 
-// Connection URL
+// Connection URL for MongoDB Atlas
 const url =
-  "mongodb://username:password@localhost:27017/?authMechanism=DEFAULT";
-const client = new MongoClient(url);
+  "mongodb+srv://ArrighiCenter:vV7vyKe9gZzPgRJ3@gsp.jkwip3p.mongodb.net/";
+
+// Ensure you handle your credentials securely
+const client = new MongoClient(url, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 // Database Name
-const dbName = "New";
+const dbName = "Nov2023";
 
 // Use cors middleware to handle cross-origin requests
 app.use(cors());
@@ -37,7 +42,7 @@ startDatabase().then(() => {
 // Reuse the same db connection across requests
 app.get("/data", async (req, res) => {
   try {
-    const collection = db.collection("coded");
+    const collection = db.collection("TruePositive"); // Updated collection name
     // Find some documents
     const docs = await collection.find({}).toArray();
     res.status(200).json(docs);
