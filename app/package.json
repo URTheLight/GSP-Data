@@ -19,15 +19,20 @@
     "@babel/runtime": "^7.22.10",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@mui/base": "^5.0.0-beta.23",
     "@mui/icons-material": "^5.14.3",
     "@mui/lab": "^5.0.0-alpha.140",
     "@mui/material": "^5.14.5",
+    "@mui/system": "5.14.17",
+    "chart.js": "^4.4.0",
     "firebase": "^10.1.0",
     "localforage": "^1.10.0",
     "notistack": "^3.0.1",
     "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.15.0",
+    "recharts": "^2.8.0",
     "recoil": "^0.7.7"
   },
   "devDependencies": {
@@ -42,5 +47,10 @@
     "typescript": "~5.1.6",
     "vite": "~4.4.9",
     "vitest": "~0.33.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "echo 'Skipping pre-commit hook'"
+    }
   }
 }

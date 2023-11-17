@@ -34,8 +34,8 @@ async function startDatabase() {
 
 // Start the database and then the server
 startDatabase().then(() => {
-  app.listen(port, "0.0.0.0", () => {
-    console.log(`Server running at http://0.0.0.0:${port}`);
+  app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
   });
 });
 

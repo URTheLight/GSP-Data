@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: 2014-present Kriasoft */
 /* SPDX-License-Identifier: MIT */
 
-import { QueryStats, Download } from "@mui/icons-material";
+import { Plagiarism, QueryStats } from "@mui/icons-material";
 import { Box, Button, Container, Typography } from "@mui/material";
 import { usePageEffect } from "../../core/page.js";
 
@@ -15,7 +15,13 @@ export function Component(): JSX.Element {
       </Typography>
 
       <Typography sx={{ mb: 4 }} variant="h3" align="center">
-      The group is in the process of creating a new database on global social unrest from 1851 to today from events reported in the international press, including The New York Times and The Guardian, with the goal of mapping the spatial-temporal distribution of events and forms of protest and grievances.  The working group is also using the database to systematically compare the current period with past analogous periods of widespread global unrest.s
+        The group is in the process of creating a new database on global social
+        unrest from 1851 to today from events reported in the international
+        press, including The New York Times and The Guardian, with the goal of
+        mapping the spatial-temporal distribution of events and forms of protest
+        and grievances. The working group is also using the database to
+        systematically compare the current period with past analogous periods of
+        widespread global unrest.
       </Typography>
 
       <Box
@@ -28,16 +34,16 @@ export function Component(): JSX.Element {
         <Button
           variant="outlined"
           size="large"
-          href={`../api/Api`}
+          href={`../view`}
           children="Explore Data"
           startIcon={<QueryStats />}
         />
         <Button
           variant="outlined"
           size="large"
-          href={`../download/Download`}
-          children="Download Data"
-          startIcon={<Download />}
+          href={`../analysis`}
+          children="Text Analysis"
+          startIcon={<Plagiarism />}
         />
       </Box>
     </Container>

@@ -40,6 +40,14 @@ export const router = createBrowserRouter([
           },
         ],
       },
+      {
+        path: "view",
+        lazy: () => import("./view/View.js"),
+      },
+      {
+        path: "analysis",
+        lazy: () => import("./analysis/Analysis.js"),
+      },
     ],
   },
 ]);
