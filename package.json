@@ -59,6 +59,7 @@
     "chart.js": "^4.4.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
+    "firebase": "^10.6.0",
     "mongodb": "^6.2.0",
     "react-chartjs-2": "^5.2.0",
     "rechart": "^0.0.1"
