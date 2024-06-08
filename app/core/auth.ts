@@ -56,8 +56,8 @@ export async function getIdToken() {
 
 export const SignInMethods: SignInMethod[] = [
   "google.com",
-  "apple.com",
-  "anonymous",
+  "facebook.com",
+  "microsoft.com",
 ];
 
 export const CurrentUser = atom<User | null>({

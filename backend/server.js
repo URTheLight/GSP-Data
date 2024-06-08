@@ -1,4 +1,3 @@
-// server.js
 import cors from "cors";
 import express from "express";
 import mongodb from "mongodb";
@@ -9,13 +8,10 @@ const port = 3001; // Ensure this port is different from the React app's port
 
 // Connection URL for MongoDB Atlas
 const url =
-  "mongodb+srv://ArrighiCenter:vV7vyKe9gZzPgRJ3@gsp.jkwip3p.mongodb.net/";
+  "mongodb+srv://ArrighiCenter:vV7vyKe9gZzPgRJ3@cluster0.dhkc3cr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Ensure you handle your credentials securely
-const client = new MongoClient(url, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const client = new MongoClient(url);
 
 // Database Name
 const dbName = "Nov2023";
@@ -27,9 +23,13 @@ app.use(cors());
 let db;
 
 async function startDatabase() {
-  await client.connect();
-  db = client.db(dbName);
-  console.log("Connected correctly to MongoDB server");
+  try {
+    await client.connect();
+    db = client.db(dbName);
+    console.log("Connected correctly to MongoDB server");
+  } catch (err) {
+    console.error("Failed to connect to MongoDB server", err);
+  }
 }
 
 // Start the database and then the server

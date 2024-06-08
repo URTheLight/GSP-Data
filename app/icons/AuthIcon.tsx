@@ -19,6 +19,21 @@ export function AuthIcon(props: AuthIconProps): JSX.Element {
     );
   }
 
+  if (variant === "microsoft.com") {
+    return (
+      <SvgIcon role="img" viewBox="0 0 48 48" {...other}>
+        <title>Microsoft</title>
+        <g>
+          <path fill="#F25022" d="M6,6h18v18H6z" /> {/* Red square */}
+          <path fill="#7FBA00" d="M24,6h18v18H24z" /> {/* Green square */}
+          <path fill="#00A4EF" d="M6,24h18v18H6z" /> {/* Blue square */}
+          <path fill="#FFB900" d="M24,24h18v18H24z" /> {/* Yellow square */}
+          <path fill="none" d="M0 0h48v48H0z" />
+        </g>
+      </SvgIcon>
+    );
+  }
+
   if (variant === "google.com") {
     return (
       <SvgIcon role="img" viewBox="0 0 48 48" {...other}>

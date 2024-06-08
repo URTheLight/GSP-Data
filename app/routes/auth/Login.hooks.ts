@@ -10,26 +10,43 @@ import { SignInMethod, signIn } from "../../core/firebase.js";
  */
 export function useHandleSubmit(
   state: State,
+  setState: SetState,
 ): [submit: React.FormEventHandler, inFlight: boolean] {
   const [inFlight, setInFlight] = React.useState(false);
 
-  return [
-    React.useCallback(
-      async (event) => {
-        event.preventDefault();
-        try {
-          setInFlight(true);
-          console.log(state.email);
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          throw new Error("Not implemented");
-        } finally {
-          setInFlight(false);
+  const submit: React.FormEventHandler = React.useCallback(
+    async (event) => {
+      event.preventDefault(); // Prevent default form submission behavior
+      setInFlight(true); // Indicate that an async operation is in progress
+      try {
+        if (!state.otpSent) {
+          // If OTP hasn't been sent, call the function to send it
+          await sendOTP(state.email);
+          setState((prev) => ({ ...prev, otpSent: true })); // Indicate that OTP has been sent
+        } else {
+          // If OTP has been sent, call the function to verify it
+          const userCredential: UserCredential = await verifyOTP(
+            state.email,
+            state.code,
+          );
+          console.log(userCredential); // Placeholder for success action, e.g., redirect or show success message
+          // Optionally, update state here with success information
         }
-      },
-      [state.email],
-    ),
-    inFlight,
-  ];
+      } catch (error) {
+        // Handle any errors that occur during the process
+        console.error(error);
+        setState((prev) => ({
+          ...prev,
+          error: error instanceof Error ? error.message : String(error),
+        }));
+      } finally {
+        setInFlight(false); // Reset the in-flight status regardless of outcome
+      }
+    },
+    [state.email, state.code, state.otpSent, setState],
+  );
+
+  return [submit, inFlight];
 }
 
 /**

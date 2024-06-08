@@ -92,7 +92,7 @@ export function Component(): JSX.Element {
             name="email"
             type="email"
             variant="outlined"
-            label="Work email"
+            label="Email Address"
             placeholder="Enter your email address..."
             InputLabelProps={{ shrink: true }}
             onChange={handleChange}
@@ -135,7 +135,7 @@ export function Component(): JSX.Element {
       </Typography>
 
       <Divider
-        sx={{ color: "divider", order: isSignUp ? undefined : -1 }}
+        sx={{ color: "divider" }}
         children="OR"
       />
 
@@ -143,7 +143,6 @@ export function Component(): JSX.Element {
         sx={{
           backgroundColor: (theme) =>
             theme.palette.mode === "light" ? "white" : undefined,
-          order: isSignUp ? undefined : -2,
         }}
         color="inherit"
         type="submit"
@@ -160,16 +159,15 @@ export function Component(): JSX.Element {
         sx={{
           backgroundColor: (theme) =>
             theme.palette.mode === "light" ? "white" : undefined,
-          order: isSignUp ? undefined : -2,
         }}
         color="inherit"
         type="submit"
         variant="outlined"
         size="large"
-        children="Continue with Apple"
-        startIcon={<AuthIcon variant="apple.com" />}
+        children="Continue with Facebook"
+        startIcon={<AuthIcon variant="facebook.com" />}
         onClick={handleSignIn}
-        data-method="apple.com"
+        data-method="facebook.com"
         fullWidth
       />
 
@@ -177,16 +175,15 @@ export function Component(): JSX.Element {
         sx={{
           backgroundColor: (theme) =>
             theme.palette.mode === "light" ? "white" : undefined,
-          order: isSignUp ? undefined : -2,
         }}
         color="inherit"
         type="submit"
         variant="outlined"
         size="large"
-        children="Continue as anonymous"
-        startIcon={<AuthIcon color="inherit" variant="anonymous" />}
+        children="Continue with Microsoft"
+        startIcon={<AuthIcon variant="microsoft.com" />}
         onClick={handleSignIn}
-        data-method="anonymous"
+        data-method="microsoft.com"
         fullWidth
       />
 

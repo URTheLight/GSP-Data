@@ -460,7 +460,7 @@ export function Component (): JSX.Element
       setIsLoading( true );
       try
       {
-        const response = await fetch( "http://10.163.40.225:3001/data" );
+        const response = await fetch( "http://10.160.161.100:3001/data" );
         const data = await response.json();
         setCollectionData( data );
       } catch ( error )
