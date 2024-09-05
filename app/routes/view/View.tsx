@@ -32,7 +32,6 @@ import
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import "chart.js/auto";
 import React, { useEffect, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { useCurrentUser } from "../../core/auth.js";
@@ -460,7 +459,8 @@ export function Component (): JSX.Element
       setIsLoading( true );
       try
       {
-        const response = await fetch( "http://10.160.161.100:3001/data" );
+        const response = await fetch( "http://10.163.40.208:3001/data
+          " );
         const data = await response.json();
         setCollectionData( data );
       } catch ( error )
